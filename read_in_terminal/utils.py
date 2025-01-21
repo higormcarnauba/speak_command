@@ -1,13 +1,10 @@
 import os
 import pyttsx3, keyboard, threading
 
-# Configuração do motor de fala
-
 keypress_event = threading.Event()
 engine = pyttsx3.init()  
     
 def speak(text):
-    """Faz o computador falar o texto passado."""
     try:
         engine.say(text)
         engine.runAndWait()
@@ -18,12 +15,12 @@ def stop_speaking():
     engine.stop()
 
 def detect_keypress():
-    """Detecta pressionamento da tecla ESC para parar a fala."""
+    # Detecta pressionamento da tecla ESC para parar a fala
     while not keypress_event.is_set():
         if keyboard.is_pressed('esc'):
             print("Parando a fala...")
             stop_speaking()
-            keypress_event.set()  # Sinaliza que a tecla foi pressionada
+            keypress_event.set()
             break
 
 def keyPressed():

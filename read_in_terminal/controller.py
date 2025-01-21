@@ -1,9 +1,14 @@
 import subprocess, os, pyttsx3
-import utils as util
+from read_in_terminal import utils as util
+
 
 engine = pyttsx3.init()
+import os
 
-LOG_FILE = "logs\\terminal_log.txt"
+LOG_DIR = os.path.join(os.path.dirname(__file__), "logs")
+LOG_FILE = os.path.join(LOG_DIR, "terminal_log.txt")
+
+os.makedirs(LOG_DIR, exist_ok=True)
 
 def run_command_and_log(command):
     # Executa um comando no terminal e salva no log, usando subprocess
@@ -57,6 +62,7 @@ def run_python_script(script_name):
     if result.returncode == 0:
         output = result.stdout.strip()
         print("Saída do script: ", output)
+        util.speak(output)
         return output
     else:
         error_msg = f"Erro ao executar o script:\n{result.stderr.strip()}"

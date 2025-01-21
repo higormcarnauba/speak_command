@@ -1,5 +1,5 @@
 import sys, subprocess, os
-import controller as control
+from read_in_terminal import controller as control
 
 args = sys.argv
 
@@ -12,7 +12,7 @@ def main():
     
     match cmd[0]:
         case '--pyFile':
-            if len(cmd!=2):
+            if len(cmd)!=2:
                 print('Erro: Insira os argumentos corretamente!')
                 sys.exit()
             else:
