@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="speak_command",
+    name="pyspeak_command",
     version="1.0.0",
     author="Cícero Higor",
     author_email="higormc2015@example.com",
@@ -23,6 +23,10 @@ setup(
             "scmd=speak_command.main:main",
             "SCMD=speak_command.main:main",
             "SCOMMAND=speak_command.main:main"
+            "pyscmd=speak_command.main:main"
+            "PYSCMD=speak_command.main:main"
+            "pyspeakcommand=speak_command.main:main"
+            "PYSPEAKCOMMAND=speak_command.main:main"
         ]
     },
     classifiers=[
