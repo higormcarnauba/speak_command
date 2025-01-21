@@ -1,4 +1,4 @@
-# Read In Terminal 🖥️🔊
+# Speak Command 🖥️🔊
 
 Este projeto permite ler a execução de comandos no terminal, e até mesmo ler a saída de arquivos Python.
 
