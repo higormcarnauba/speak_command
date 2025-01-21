@@ -1,6 +1,6 @@
 # Read In Terminal 🖥️🔊
 
-Este projeto permite executar comandos no terminal, registrar a saída em um arquivo e até mesmo ler a resposta em voz alta.
+Este projeto permite ler a execução de comandos no terminal, e até mesmo ler a saída de arquivos Python.
 
 ## Instalação
 

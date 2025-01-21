@@ -1,5 +1,0 @@
-Metadata-Version: 2.2
-Name: read_in_terminal
-Version: 1.0
-Requires-Dist: pyttsx3
-Dynamic: requires-dist
