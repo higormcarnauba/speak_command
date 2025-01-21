@@ -1,0 +1,4 @@
+[console_scripts]
+RIT = main:main
+Read_In_Terminal = main:main
+rit = main:main
