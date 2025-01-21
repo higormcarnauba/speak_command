@@ -61,7 +61,7 @@ def run_python_script(script_name):
     # Se for 0 a saida foi bem sucedida
     if result.returncode == 0:
         output = result.stdout.strip()
-        print("Saída do script: ", output)
+        print("Saída do script: \n", output)
         util.speak(output)
         return output
     else:
