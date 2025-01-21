@@ -22,11 +22,11 @@ setup(
             "scommand=speak_command.main:main",
             "scmd=speak_command.main:main",
             "SCMD=speak_command.main:main",
-            "SCOMMAND=speak_command.main:main"
-            "pyscmd=speak_command.main:main"
-            "PYSCMD=speak_command.main:main"
-            "pyspeakcommand=speak_command.main:main"
-            "PYSPEAKCOMMAND=speak_command.main:main"
+            "SCOMMAND=speak_command.main:main",
+            "pyscmd=speak_command.main:main",
+            "PYSCMD=speak_command.main:main",
+            "pyspeakcommand=speak_command.main:main",
+            "PYSPEAKCOMMAND=speak_command.main:main",
         ]
     },
     classifiers=[
