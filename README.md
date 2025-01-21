@@ -7,4 +7,4 @@ Este projeto permite ler a execução de comandos no terminal, e até mesmo ler 
 Você pode instalar este pacote com:
 
 ```bash
-pip install read_in_terminal
+pip install speak_command
