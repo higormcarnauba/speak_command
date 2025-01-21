@@ -1,5 +1,5 @@
 import sys, subprocess, os
-from read_in_terminal import controller as control
+from speak_command import controller as control
 
 args = sys.argv
 

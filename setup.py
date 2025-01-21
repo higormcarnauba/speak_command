@@ -16,9 +16,9 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "Read_In_Terminal=read_in_terminal.main:main",
-            "RIT=read_in_terminal.main:main",
-            "rit=read_in_terminal.main:main"
+            "Speak_Command=speak_command.main:main",
+            "SC=speak_command.main:main",
+            "sc=speak_command.main:main"
         ]
     },
     classifiers=[
