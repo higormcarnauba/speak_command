@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="read_in_terminal",
+    name="speak_command",
     version="1.0.0",
     author="Cícero Higor",
     author_email="higormc2015@example.com",
@@ -17,8 +17,12 @@ setup(
     entry_points={
         "console_scripts": [
             "Speak_Command=speak_command.main:main",
-            "SC=speak_command.main:main",
-            "sc=speak_command.main:main"
+            "speak_command=speak_command.main:main",
+            "SPEAK_COMMAND=speak_command.main:main",
+            "scommand=speak_command.main:main",
+            "scmd=speak_command.main:main",
+            "SCMD=speak_command.main:main",
+            "SCOMMAND=speak_command.main:main"
         ]
     },
     classifiers=[
