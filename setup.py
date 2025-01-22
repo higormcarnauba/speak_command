@@ -8,7 +8,7 @@ setup(
     description="Um utilitário para ler comandos no terminal e executar scripts Python",
     long_description=open("README.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/higormcarnauba/read_in_terminal",
+    url="https://github.com/higormcarnauba/speak_command",
     packages=find_packages(),  # Encontra automaticamente todos os pacotes
     install_requires=[
         "pyttsx3",
