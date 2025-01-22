@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="pyspeak_command",
-    version="1.0.0",
+    version="1.0.1",
     author="Cícero Higor",
     author_email="higormc2015@example.com",
     description="Um utilitário para ler comandos no terminal e executar scripts Python",
