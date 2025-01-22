@@ -1,28 +1,38 @@
-import subprocess, os, pyttsx3
+import subprocess, os, sys, pyttsx3
 from speak_command import utils as util
 
-
 engine = pyttsx3.init()
-import os
 
 LOG_DIR = os.path.join(os.path.dirname(__file__), "logs")
 LOG_FILE = os.path.join(LOG_DIR, "terminal_log.txt")
 
 os.makedirs(LOG_DIR, exist_ok=True)
+sys.stdout.reconfigure(encoding="utf-8")
 
 def run_command_and_log(command):
-    # Executa um comando no terminal e salva no log, usando subprocess
+    if isinstance(command, list):
+        command = " ".join(command)
+        
+    if os.name == "nt":  # Apenas no Windows
+        subprocess.run("chcp 65001 > nul", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        
+    try:
+        result = subprocess.run(
+            command,
+            shell=True,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace"
+        )
+        output = result.stdout.strip() + "\n" + result.stderr.strip()
+    except Exception as e:
+        output = f"Erro ao executar o comando: {e}"
+
     with open(LOG_FILE, "w", encoding="utf-8") as log:
-        log.write(f"\n> {' '.join(command)}\n")  # Salva o comando digitado
-
-        try:
-            result = subprocess.run(command, shell=True, capture_output=True, text=True, errors="replace")
-            output = result.stdout + result.stderr
-        except Exception as e:
-            output = f"Erro ao executar o comando: {e}"
-
-        log.write(output + "\n")
-        return output
+        log.write(f"\n> {command}\n{output}\n")
+        
+    return output
 
 def read_terminal_history(command):
     #Le o comando salvo no arquivo de historico, executa comandos e fala o conteúdo
@@ -55,7 +65,9 @@ def run_python_script(script_name):
     result = subprocess.run(
         ["python3", script_path],
         capture_output=True,
-        text=True
+        text=True,
+        encoding="utf-8",
+        errors="replace"
     )
     
     # Se for 0 a saida foi bem sucedida
