@@ -1,11 +1,12 @@
 import sys, subprocess, os
 from speak_command import controller as control
+from speak_command import utils as util
 
 args = sys.argv
 
 def main():
     if len(args) < 2:
-        print('Erro: Nenhum comando fornecido!')
+        util.speak('Erro: Nenhum comando fornecido!')
         sys.exit()
     
     cmd = args[1:]
