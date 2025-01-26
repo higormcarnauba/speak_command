@@ -1,6 +1,9 @@
 import sys, subprocess, os
-from speak_command import controller as control
+# import controller as control
+# import utils as util
 from speak_command import utils as util
+from speak_command import controller as control
+
 
 args = sys.argv
 
@@ -13,13 +16,12 @@ def main():
     
     match cmd[0]:
         case '--pyFile':
-            if len(cmd)!=2:
-                print('Erro: Insira os argumentos corretamente!')
-                sys.exit()
-            else:
-                control.run_python_script(cmd[1])
+            control.run_scripts(len(cmd), cmd)
+        case '--help' | '--h':
+            control.run_help(len(cmd), cmd)
         case _:
-            control.read_terminal_history(cmd)
+            control.run_normal_command(len(cmd), cmd)
+
 
 if __name__ == "__main__":
     main()

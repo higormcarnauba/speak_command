@@ -1,83 +1,135 @@
-import subprocess, os, sys, pyttsx3
+import subprocess as sp
+import os, sys
+import pyttsx3
+import ftfy, locale, chardet
+# import utils as util
+from deep_translator import GoogleTranslator
 from speak_command import utils as util
 
 engine = pyttsx3.init()
+LOG_FILE = os.path.join(os.path.dirname(__file__), "logs", "terminal_log.txt")
 
-LOG_DIR = os.path.join(os.path.dirname(__file__), "logs")
-LOG_FILE = os.path.join(LOG_DIR, "terminal_log.txt")
+def run_normal_command(qtdArgs, cmd):
+    if qtdArgs==3: #Tradução
+        log_command(cmd[0])
+        translate_log(cmd[1],cmd[2])
+        read_log()
+                
+    elif qtdArgs==1: #Exibe o help
+        log_command(cmd[0])
+        util.change_voice("Portuguese")
+        read_log()
+    else:
+        print('Error: Insira os argumentos corretamente!')
+        util.speak('Error: Insira os argumentos corretamente!')
+        sys.exit()
 
-os.makedirs(LOG_DIR, exist_ok=True)
-sys.stdout.reconfigure(encoding="utf-8")
+def run_help(qtdArgs, cmd):
+    if qtdArgs==3: #Tradução
+        util.text_help()
+        translate_log(cmd[1],cmd[2])
+        read_log()
+                
+    elif qtdArgs==1: #Exibe o help
+        util.change_voice("Portuguese")
+        util.save_log(util.text_help())
+        read_log()
 
-def run_command_and_log(command):
-    if isinstance(command, list):
-        command = " ".join(command)
-        
-    if os.name == "nt":  # Apenas no Windows
-        subprocess.run("chcp 65001 > nul", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        
+    else: #
+        print('Error: Insira os argumentos corretamente!')
+        util.speak('Error: Insira os argumentos corretamente!')
+        sys.exit()
+
+def run_scripts(qtdArgs, cmd):
+    if qtdArgs==2:
+        run_python_script(cmd[1])
+        read_log()
+    elif qtdArgs==4: #Tradução
+        run_python_script(cmd[1])
+        translate_log(cmd[2], cmd[3])
+        read_log()
+    else:
+        print('Error: Insira os argumentos corretamente!')
+        util.speak('Error: Insira os argumentos corretamente!')
+        sys.exit()
+
+def translate_log(lingua_ori, lingua_dst):
     try:
-        result = subprocess.run(
+        util.change_voice(lingua_dst)
+        lingua_ori = util.lang_suport(lingua_ori)
+        lingua_dst = util.lang_suport(lingua_dst)
+        translated = GoogleTranslator(source=lingua_ori, target=lingua_dst).translate_file(LOG_FILE)
+        util.save_log(translated)
+    except Exception as e:
+        util.save_log(f"Erro na tradução: {e}")
+        print(f"Erro na tradução: {e}")
+
+def log_command(command):
+    try:
+        result = sp.run(
             command,
             shell=True,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace"
+            stdout=sp.PIPE,
+            stderr=sp.STDOUT
         )
-        output = result.stdout.strip() + "\n" + result.stderr.strip()
-    except Exception as e:
-        output = f"Erro ao executar o comando: {e}"
-
-    with open(LOG_FILE, "w", encoding="utf-8") as log:
-        log.write(f"\n> {command}\n{output}\n")
         
-    return output
+        if os.name == 'nt':
+            encoding = 'cp850'
+        else:
+            encoding = 'utf-8'
+        
+        output = result.stdout.decode(encoding, errors='replace')
+        output = ftfy.fix_text(f"\n> {"".join(command)}\n{output}")
 
-def read_terminal_history(command):
-    #Le o comando salvo no arquivo de historico, executa comandos e fala o conteúdo
-    output = run_command_and_log(command)
+        util.save_log(output)
+                    
+    except Exception as e:
+        util.save_log(f"Erro ao executar o comando: {e}")
+        print(f"Erro ao executar o comando:: {e}")
+
+def read_log():
+    util.keyPressed()
+    
     if os.path.exists(LOG_FILE):
-        with open(LOG_FILE, "r", encoding="utf-8", errors="replace") as file:
-            history = file.read()
-            print(history)
-            util.keyPressed()
-            util.speak(history)
-            return history
+        with open(LOG_FILE, "r", encoding='utf-8') as file:
+            output = file.read()
+        print(output)
+        util.speak(output)
     else:
-        history = "Nenhum histórico encontrado."
-        print(history)
-        util.speak(history)
-        return history
+        no_history = "Nenhum histórico encontrado."
+        print(no_history)
+        util.speak(no_history)
+
 
 def run_python_script(script_name):
-    # Executa um arquivo Python no terminal e retorna sua saida, ou o erro
     current_directory = os.getcwd()
     script_path = os.path.join(current_directory, script_name)
-    util.keyPressed()
     
     if not os.path.exists(script_path):
         error_msg = f"Erro: O arquivo '{script_name}' não foi encontrado no diretório '{current_directory}'"
         print(error_msg)
         util.speak(error_msg)
-        return error_msg
+        util.save_log(error_msg)
+        return
 
-    result = subprocess.run(
-        ["python3", script_path],
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace"
-    )
+    try:
+        python_cmd = "python" if os.name == "nt" else "python3"
+        
+        result = sp.run(
+            [python_cmd, script_path],
+            capture_output=True,  
+            text=True
+        )
+
+        stdout_text = ftfy.fix_text(result.stdout) if result.stdout else ""
+        stderr_text = ftfy.fix_text(f"\nErros:\n{result.stderr}") if result.stderr else ""
+
+        output = f"\n> {script_name}\n{stdout_text}{stderr_text}"
+
+        util.save_log(output)
     
-    # Se for 0 a saida foi bem sucedida
-    if result.returncode == 0:
-        output = result.stdout.strip()
-        print("Saída do script: \n", output)
-        util.speak(output)
-        return output
-    else:
-        error_msg = f"Erro ao executar o script:\n{result.stderr.strip()}"
+    except Exception as e:
+        error_msg = f"Erro ao executar o script: {e}"
+        util.save_log(error_msg)
         print(error_msg)
-        util.speak(error_msg)
-        return error_msg
+        util.speak(str(e))
