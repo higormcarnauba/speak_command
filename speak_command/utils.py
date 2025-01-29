@@ -1,11 +1,19 @@
 import os
 import pyttsx3
-import keyboard, threading
-import ftfy, locale, chardet
+from pynput import keyboard
+import threading
+import ftfy
 
-keypress_event = threading.Event()
+key_listener = None
 engine = pyttsx3.init()
-LOG_FILE = os.path.join(os.path.dirname(__file__), "logs", "terminal_log.txt")
+
+if os.name == "nt":
+    LOG_DIR = os.path.join(os.getenv("APPDATA"), "speak_command", "logs")
+else:
+    LOG_DIR = os.path.expanduser("~/.speak_command/logs")
+
+os.makedirs(LOG_DIR, exist_ok=True)
+LOG_FILE = os.path.join(LOG_DIR, "terminal_log.txt")
 
 def lang_suport(lingua):
     idiomas_suportados = {
@@ -26,12 +34,16 @@ def lang_suport(lingua):
         "swedish": "sv", "thai": "th", "turkish": "tr", "ukrainian": "uk",
         "urdu": "ur", "vietnamese": "vi", "welsh": "cy", "yiddish": "yi", "zulu": "zu"
     }
-
     lingua = lingua.lower()
-    if lingua not in idiomas_suportados:
-        raise ValueError(f"Idioma '{lingua}' não suportado. Use: {list(idiomas_suportados.keys())}")
-    
-    return idiomas_suportados[lingua]
+    if lingua in idiomas_suportados.values():
+        return lingua  
+
+    if lingua in idiomas_suportados:
+        return idiomas_suportados[lingua]
+
+    raise ValueError(
+        f"Idioma '{lingua}' não suportado. Use um dos seguintes: {list(idiomas_suportados.keys()) + list(idiomas_suportados.values())}"
+    )
 
 def change_voice(language):
     voices = engine.getProperty('voices')
@@ -44,6 +56,7 @@ def change_voice(language):
 
 
 def speak(text):
+    keyPressed()
     try:
         engine.say(text)
         engine.runAndWait()
@@ -51,20 +64,27 @@ def speak(text):
         print(f"Erro ao falar: {e}")
 
 def stop_speaking():
+    global key_listener
     engine.stop()
+    if key_listener:
+        key_listener.stop()
 
 def detect_keypress():
-    while not keypress_event.is_set():
-        if keyboard.is_pressed('esc'):
+    global key_listener
+    key_listener = keyboard.Listener(on_press=on_press)
+    key_listener.start()
+        
+def on_press(key):
+    try:
+        if key == keyboard.Key.esc:
             print("Parando a fala...")
             stop_speaking()
-            keypress_event.set()
-            break
+            return False  # Interrompe o listener
+    except:
+        pass
 
 def keyPressed():
-    keypress_event.clear()
-    keypress_thread = threading.Thread(target=detect_keypress, daemon=True)
-    keypress_thread.start()
+    detect_keypress()
     
 def text_help() -> str:
     string = """Como Utilizar a biblioteca:
@@ -82,9 +102,7 @@ Opções gerais:
 def save_log(content):
     try:
         with open(LOG_FILE, "w", encoding='utf-8', errors='replace') as log:
-            log.write(content+"\n")
+            log.write(content + "\n")
             log.flush()
     except Exception as e:
-        with open(LOG_FILE, "w", encoding='utf-8') as log:
-            log.write(f"Erro ao salvar o arquivo: {str(e)}\n")
-        print(f"Erro: {e}")
+        print(f"Erro ao salvar o log: {e}")

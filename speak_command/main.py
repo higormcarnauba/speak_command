@@ -1,17 +1,20 @@
-import sys, subprocess, os
+import sys, io
 # import controller as control
 # import utils as util
 from speak_command import utils as util
 from speak_command import controller as control
 
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 args = sys.argv
 
 def main():
-    if len(args) < 2:
-        util.speak('Erro: Nenhum comando fornecido!')
-        sys.exit()
     
+    if len(args) < 2:
+        control.run_help(1, args)
+        sys.exit()
+
     cmd = args[1:]
     
     match cmd[0]:

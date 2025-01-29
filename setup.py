@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="pyspeak_command",
-    version="2.0.0",
+    version="2.1.0",
     author="Cícero Higor",
     author_email="higormc2015@example.com",
     description="Um utilitário para ler e traduzir comandos no terminal e executar scripts Python",
@@ -12,14 +12,14 @@ setup(
     packages=find_packages(),  # Encontra automaticamente todos os pacotes
     install_requires=[
         "pyttsx3",
-        "keyboard",
+        "pynput",
         "deep_translator",
         "ftfy"
     ],
     entry_points={
         "console_scripts": [
         "scmd=speak_command.main:main",
-        "speak-command=speak_command.main:main",
+        "speak_command=speak_command.main:main",
     ]
     },
     classifiers=[

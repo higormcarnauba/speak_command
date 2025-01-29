@@ -1,13 +1,20 @@
 import subprocess as sp
 import os, sys
 import pyttsx3
-import ftfy, locale, chardet
+import ftfy
 # import utils as util
 from deep_translator import GoogleTranslator
 from speak_command import utils as util
 
 engine = pyttsx3.init()
-LOG_FILE = os.path.join(os.path.dirname(__file__), "logs", "terminal_log.txt")
+if os.name == "nt":
+    LOG_DIR = os.path.join(os.getenv("APPDATA"), "speak_command", "logs")
+else:
+    LOG_DIR = os.path.expanduser("~/.speak_command/logs")
+
+os.makedirs(LOG_DIR, exist_ok=True)
+LOG_FILE = os.path.join(LOG_DIR, "terminal_log.txt")
+
 
 def run_normal_command(qtdArgs, cmd):
     if qtdArgs==3: #Tradução
@@ -20,8 +27,8 @@ def run_normal_command(qtdArgs, cmd):
         util.change_voice("Portuguese")
         read_log()
     else:
-        print('Error: Insira os argumentos corretamente!')
-        util.speak('Error: Insira os argumentos corretamente!')
+        print('Erro: Insira os argumentos corretamente!')
+        util.speak('Erro: Insira os argumentos corretamente!')
         sys.exit()
 
 def run_help(qtdArgs, cmd):
@@ -36,8 +43,8 @@ def run_help(qtdArgs, cmd):
         read_log()
 
     else: #
-        print('Error: Insira os argumentos corretamente!')
-        util.speak('Error: Insira os argumentos corretamente!')
+        print('Erro: Insira os argumentos corretamente!')
+        util.speak('Erro: Insira os argumentos corretamente!')
         sys.exit()
 
 def run_scripts(qtdArgs, cmd):
@@ -49,8 +56,8 @@ def run_scripts(qtdArgs, cmd):
         translate_log(cmd[2], cmd[3])
         read_log()
     else:
-        print('Error: Insira os argumentos corretamente!')
-        util.speak('Error: Insira os argumentos corretamente!')
+        print('Erro: Insira os argumentos corretamente!')
+        util.speak('Erro: Insira os argumentos corretamente!')
         sys.exit()
 
 def translate_log(lingua_ori, lingua_dst):
@@ -70,45 +77,41 @@ def log_command(command):
             command,
             shell=True,
             stdout=sp.PIPE,
-            stderr=sp.STDOUT
+            stderr=sp.PIPE
         )
         
-        if os.name == 'nt':
-            encoding = 'cp850'
-        else:
+        encoding = 'cp850' if os.name == 'nt' else 'utf-8'
+        if result.stderr:
             encoding = 'utf-8'
+            output = result.stderr.decode(encoding, errors='replace')
+        else:
+            output = result.stdout.decode(encoding, errors='replace')
         
-        output = result.stdout.decode(encoding, errors='replace')
-        output = ftfy.fix_text(f"\n> {"".join(command)}\n{output}")
-
-        util.save_log(output)
+        output = ftfy.fix_text(output)
+        
+        formatted_output = f"\n> {command}\n{output}"
+        util.save_log(formatted_output)
                     
     except Exception as e:
         util.save_log(f"Erro ao executar o comando: {e}")
-        print(f"Erro ao executar o comando:: {e}")
 
 def read_log():
-    util.keyPressed()
-    
     if os.path.exists(LOG_FILE):
         with open(LOG_FILE, "r", encoding='utf-8') as file:
             output = file.read()
-        print(output)
+        print(output, flush=True)
         util.speak(output)
     else:
         no_history = "Nenhum histórico encontrado."
         print(no_history)
-        util.speak(no_history)
+        util.speak(no_history, flush=True)
 
 
 def run_python_script(script_name):
     current_directory = os.getcwd()
-    script_path = os.path.join(current_directory, script_name)
-    
+    script_path = os.path.abspath(script_name)
     if not os.path.exists(script_path):
         error_msg = f"Erro: O arquivo '{script_name}' não foi encontrado no diretório '{current_directory}'"
-        print(error_msg)
-        util.speak(error_msg)
         util.save_log(error_msg)
         return
 
@@ -131,5 +134,4 @@ def run_python_script(script_name):
     except Exception as e:
         error_msg = f"Erro ao executar o script: {e}"
         util.save_log(error_msg)
-        print(error_msg)
-        util.speak(str(e))
+        return
