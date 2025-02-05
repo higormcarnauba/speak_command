@@ -15,6 +15,7 @@ else:
 os.makedirs(LOG_DIR, exist_ok=True)
 LOG_FILE = os.path.join(LOG_DIR, "terminal_log.txt")
 
+# Descobre o idioma do texto
 def lang_suport(lingua):
     idiomas_suportados = {
         "afrikaans": "af", "albanian": "sq", "amharic": "am", "arabic": "ar",
@@ -35,6 +36,7 @@ def lang_suport(lingua):
         "urdu": "ur", "vietnamese": "vi", "welsh": "cy", "yiddish": "yi", "zulu": "zu"
     }
     lingua = lingua.lower()
+    
     if lingua in idiomas_suportados.values():
         return lingua  
 
@@ -45,6 +47,7 @@ def lang_suport(lingua):
         f"Idioma '{lingua}' não suportado. Use um dos seguintes: {list(idiomas_suportados.keys()) + list(idiomas_suportados.values())}"
     )
 
+# muda a voz do sistema
 def change_voice(language):
     voices = engine.getProperty('voices')
     i = 0
@@ -54,26 +57,29 @@ def change_voice(language):
             engine.setProperty('voice', voice.id)
             break
 
-
+# lê o o que for pedido
 def speak(text):
-    keyPressed()
+    detect_keypress()
     try:
         engine.say(text)
         engine.runAndWait()
     except Exception as e:
         print(f"Erro ao falar: {e}")
 
+# para a leitura
 def stop_speaking():
     global key_listener
     engine.stop()
     if key_listener:
         key_listener.stop()
 
+#vê se alguma tecla foi pressionada
 def detect_keypress():
     global key_listener
     key_listener = keyboard.Listener(on_press=on_press)
     key_listener.start()
-        
+    
+#vê se o esc foi pressionado
 def on_press(key):
     try:
         if key == keyboard.Key.esc:
@@ -83,22 +89,24 @@ def on_press(key):
     except:
         pass
 
-def keyPressed():
-    detect_keypress()
-    
+# mostra a ajuda
 def text_help() -> str:
     string = """Como Utilizar a biblioteca:
   scmd <comando> [opções]
 
 Opções gerais:
-  --help, --h                                                    Mostra os comandos da biblioteca.
-  --help [Lingua de Destino]                                     Traduz e mostra os comandos da biblioteca.
-  --pyFile <Nome do arquivo.py>                                  Lê a saída do arquivo ou o erro que deu.
-  --pyFile [Lingua de Origem] [Lingua de Destino]                Traduz, e lê a saída do arquivo ou o erro que deu.
+  --help, --h                                                               Mostra os comandos da biblioteca.
+  --help [Lingua de Destino]                                                Traduz e mostra os comandos da biblioteca.
   
+Para os seguintes comandos, você precisa estar no diretorio do arquivo.
+  --pyFile <Nome do arquivo.py>                                             Lê a saída do arquivo ou o erro que deu.
+  --pyFile <Nome do arquivo.py> [Lingua de Origem] [Lingua de Destino]      Traduz, e lê a saída do arquivo ou o erro que deu.
+  --file <Nome do arquivo.txt>                                              Lê o conteúdo do arquivo.
+  --file <Nome do arquivo.txt> [Lingua de Origem] [Lingua de Destino]       Traduz, e lê o conteúdo do arquivo, e cria um novo arquivo com o conteúdo traduzido.
     """
     return string
 
+# salva o log
 def save_log(content):
     try:
         with open(LOG_FILE, "w", encoding='utf-8', errors='replace') as log:

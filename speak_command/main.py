@@ -4,9 +4,6 @@ import sys, io
 from speak_command import utils as util
 from speak_command import controller as control
 
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
-
 args = sys.argv
 
 def main():
@@ -22,6 +19,8 @@ def main():
             control.run_scripts(len(cmd), cmd)
         case '--help' | '--h':
             control.run_help(len(cmd), cmd)
+        case '--file':
+            control.run_file(len(cmd), cmd)
         case _:
             control.run_normal_command(len(cmd), cmd)
 
