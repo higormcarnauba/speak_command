@@ -1,6 +1,6 @@
-# pyspeak_command 🗣️📜
+# speak_command 🗣️📜
 
-**pyspeak_command** é um projeto que permite traduzir e ler a execução de comandos no terminal, a saída de arquivos Python e arquivos de texto. Ele é útil para quem deseja ouvir a saída de comandos ou scripts diretamente no terminal, além de oferecer a funcionalidade de tradução para diferentes idiomas.
+**speak_command** é um projeto que permite traduzir e ler a execução de comandos no terminal, a saída de arquivos Python e arquivos de texto. Ele é útil para quem deseja ouvir a saída de comandos ou scripts diretamente no terminal, além de oferecer a funcionalidade de tradução para diferentes idiomas.
 
 ---
 
