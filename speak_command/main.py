@@ -1,7 +1,7 @@
 import sys, io
 # import controller as control
 # import utils as util
-from speak_command import utils as util
+# from speak_command import utils as util
 from speak_command import controller as control
 
 args = sys.argv

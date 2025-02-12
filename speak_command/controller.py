@@ -17,14 +17,13 @@ LOG_FILE = os.path.join(LOG_DIR, "terminal_log.txt")
 
 #funções que executam os comandos, serão chamadas no main.py
 def run_normal_command(qtdArgs, cmd):
-    if qtdArgs==3: #Tradução
+    if qtdArgs==3:
         log_command(cmd[0])
         translate_log(cmd[1],cmd[2])
         read_log()
                 
-    elif qtdArgs==1: #Exibe o help
+    elif qtdArgs==1:
         log_command(cmd[0])
-        util.change_voice("Portuguese")
         read_log()
     else:
         print('Erro: Insira os argumentos corretamente!')
@@ -32,17 +31,17 @@ def run_normal_command(qtdArgs, cmd):
         sys.exit()
 
 def run_help(qtdArgs, cmd):
-    if qtdArgs==3: #Tradução
+    if qtdArgs==3:
         util.text_help()
         translate_log(cmd[1],cmd[2])
         read_log()
                 
-    elif qtdArgs==1: #Exibe o help
+    elif qtdArgs==1:
         util.change_voice("Portuguese")
         util.save_log(util.text_help())
         read_log()
 
-    else: #
+    else:
         print('Erro: Insira os argumentos corretamente!')
         util.speak('Erro: Insira os argumentos corretamente!')
         sys.exit()
@@ -51,10 +50,11 @@ def run_scripts(qtdArgs, cmd):
     if qtdArgs==2:
         python_script(cmd[1])
         read_log()
-    elif qtdArgs==4: #Tradução
+    elif qtdArgs==4:
         python_script(cmd[1])
         translate_log(cmd[2], cmd[3])
         read_log()
+
     else:
         print('Erro: Insira os argumentos corretamente!')
         util.speak('Erro: Insira os argumentos corretamente!')
@@ -64,10 +64,16 @@ def run_file(qtdArgs, cmd):
     if qtdArgs==2:
         read_file(cmd[1])
         read_log()
-    elif qtdArgs==4: #Tradução
-        read_file(cmd[1])
-        translate_file(cmd[2], cmd[3], cmd[1])
-        read_log()
+
+    elif qtdArgs==4:
+        verif = read_file(cmd[1])
+
+        if verif == False:
+            return
+        else:
+            translate_file(cmd[2], cmd[3], cmd[1])
+            read_log()
+
     else:
         print('Erro: Insira os argumentos corretamente!')
         util.speak('Erro: Insira os argumentos corretamente!')
@@ -77,11 +83,11 @@ def run_file(qtdArgs, cmd):
 def translate_file(lingua_ori, lingua_dst, file_name):
     try:
         util.change_voice(lingua_dst)
-                
+        
         lingua_ori = util.lang_suport(lingua_ori)
         lingua_dst = util.lang_suport(lingua_dst)
 
-        
+
         translated = GoogleTranslator(source=lingua_ori, target=lingua_dst).translate_file(LOG_FILE)
         util.save_log(translated)
         
@@ -109,9 +115,9 @@ def translate_log(lingua_ori, lingua_dst):
     try:
         util.change_voice(lingua_dst)
         
-        lingua_ori = util.change_voice(lingua_ori)
-        lingua_dst = util.change_voice(lingua_dst)
-        
+        lingua_ori = util.lang_suport(lingua_ori)
+        lingua_dst = util.lang_suport(lingua_dst)
+                
         translated = GoogleTranslator(source=lingua_ori, target=lingua_dst).translate_file(LOG_FILE)
         
         util.save_log(translated)
@@ -123,23 +129,12 @@ def translate_log(lingua_ori, lingua_dst):
 # salva o comando no arquivo terminal_log.txt
 def log_command(command):
     try:
-        result = sp.run(
-            command,
-            shell=True,
-            stdout=sp.PIPE,
-            stderr=sp.PIPE
-        )
-        
+        result = sp.run(command, shell=True, stdout=sp.PIPE,stderr=sp.PIPE)
         encoding = 'cp850' if os.name == 'nt' else 'utf-8'
-        if result.stderr:
-            encoding = 'cp850' if os.name == 'posix' else 'utf-8'
-            output = result.stderr.decode(encoding, errors='replace')
-        else:
-            output = result.stdout.decode(encoding, errors='replace')
-        
+        output = result.stderr.decode('utf-8', errors='replace') if result.stderr else result.stdout.decode(encoding, errors='replace')
         output = ftfy.fix_text(output)
         
-        formatted_output = f"\n> {command}\n{output}"
+        format3l.,ted_output = f"\n> {command}\n{output}"
         util.save_log(formatted_output)
                     
     except Exception as e:
@@ -169,7 +164,7 @@ def python_script(script_name):
     if os.path.getsize(script_path) == 0:
         error_msg = f"Erro: O arquivo '{script_name}' está vazio."
         util.save_log(error_msg)
-        return
+        return 
     
     try:
         python_cmd = "python" if os.name == "nt" else "python3"
@@ -203,7 +198,7 @@ def read_file(file_name):
     if os.path.getsize(file_path) == 0:
         error_msg = f"Erro: O arquivo '{file_name}' está vazio."
         util.save_log(error_msg)
-        return
+        return False
     try:   
         with open(file_path, "r", encoding='utf-8') as file:
             output = file.read()

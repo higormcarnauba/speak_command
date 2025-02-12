@@ -24,7 +24,7 @@ def lang_suport(lingua):
         "bhojpuri": "bho", "bosnian": "bs", "bulgarian": "bg", "catalan": "ca",
         "cebuano": "ceb", "chichewa": "ny", "chinese (simplified)": "zh-CN",
         "chinese (traditional)": "zh-TW", "corsican": "co", "croatian": "hr",
-        "czech": "cs", "danish": "da", "dutch": "nl", "english": "en",
+        "czech": "cs", "danish": "da", "dutch": "nl", "english": "en", 
         "esperanto": "eo", "estonian": "et", "finnish": "fi", "french": "fr",
         "german": "de", "greek": "el", "haitian creole": "ht", "hindi": "hi",
         "hungarian": "hu", "icelandic": "is", "indonesian": "id", "italian": "it",
@@ -49,13 +49,23 @@ def lang_suport(lingua):
 
 # muda a voz do sistema
 def change_voice(language):
+    language_mapping = {
+        "english": "english", "en": "english", "en-us": "english", "en-uk": "english",
+        "portuguese": "portuguese", "pt-br": "portuguese", "pt": "portuguese",
+        "german": "german", "de": "german", "de-de": "german",
+    }
+    language = language.lower()
+    if language in language_mapping:
+        language = language_mapping[language]
+    else:
+        language = lang_suport(language)
+        
     voices = engine.getProperty('voices')
-    i = 0
     for voice in voices:
-        voice.name = voice.name.lower()
-        if language.lower() in voice.name.split():
-            engine.setProperty('voice', voice.id)
-            break
+        for word in voice.name.split():
+            if language in word.lower():
+                engine.setProperty('voice', voice.id)
+                return
 
 # lê o o que for pedido
 def speak(text):

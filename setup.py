@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="pyspeak_command",
-    version="3.0.0",
+    version="3.0.1",
     author="Cícero Higor",
     author_email="higormc2015@gmail.com",
     description="Um utilitário para ler em voz alta e/ou traduzir comandos do terminal, scripts Python, e arquivos de texto",
