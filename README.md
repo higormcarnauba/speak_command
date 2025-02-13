@@ -1,6 +1,6 @@
-# Speak Command 🗣️📜
+# speak_command 🗣️📜
 
-**Speak Command** é um projeto que permite traduzir e ler a execução de comandos no terminal, a saída de arquivos Python e arquivos de texto. Ele é útil para quem deseja ouvir a saída de comandos ou scripts diretamente no terminal, além de oferecer a funcionalidade de tradução para diferentes idiomas.
+**speak_command** é um projeto que permite traduzir e ler a execução de comandos no terminal, a saída de arquivos Python e arquivos de texto. Ele é útil para quem deseja ouvir a saída de comandos ou scripts diretamente no terminal, além de oferecer a funcionalidade de tradução para diferentes idiomas.
 
 ---
 
@@ -83,5 +83,4 @@ Caso tenha dúvidas ou sugestões, entre em contato:
 - **Repositório:** [GitHub](#https://github.com/higormcarnauba)
 
 ---
-**Desenvolvido com ❤️ por Cícero Higor**
-+++
+**Desenvolvido com ❤️**
