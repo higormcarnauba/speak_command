@@ -134,7 +134,7 @@ def log_command(command):
         output = result.stderr.decode('utf-8', errors='replace') if result.stderr else result.stdout.decode(encoding, errors='replace')
         output = ftfy.fix_text(output)
         
-        format3l.,ted_output = f"\n> {command}\n{output}"
+        formatted_output = f"\n> {command}\n{output}"
         util.save_log(formatted_output)
                     
     except Exception as e:
